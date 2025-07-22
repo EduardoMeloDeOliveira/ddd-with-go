@@ -8,7 +8,7 @@ type User struct {
 	Email string    `gorm:"size:500;not null;uniqueIndex"`
 }
 
-func newUser(name string, email string) *User {
+func NewUser(name string, email string) *User {
 	return &User{
 		ID:    uuid.New(),
 		Name:  name,
