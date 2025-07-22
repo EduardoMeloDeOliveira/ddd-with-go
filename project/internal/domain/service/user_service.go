@@ -15,7 +15,7 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	return &UserService{userRepo: repo}
 }
 
-func (uService *UserService) CreateUser(name string, email string) (*entity.User, error) {
+func (uService *UserService) SaveUser(name string, email string) (*entity.User, error) {
 
 	if name == "" || email == "" {
 		return nil, errors.New("name and email can't be empty")
@@ -29,4 +29,24 @@ func (uService *UserService) CreateUser(name string, email string) (*entity.User
 
 	return user, nil
 
+}
+
+func (UserService *UserService) GetById(id string) (*entity.User, error) {
+	user, err := UserService.GetById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (UserService *UserService) GetAll() ([]*entity.User, error) {
+	users, err := UserService.userRepo.FindAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
