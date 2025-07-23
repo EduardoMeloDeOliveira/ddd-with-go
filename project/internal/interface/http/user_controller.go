@@ -64,7 +64,7 @@ func (c *UserController) FindById(ctx *gin.Context) {
 	user, err := c.userService.GetById(id)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -104,7 +104,7 @@ func (c *UserController) Delete(ctx *gin.Context) {
 		return
 	}
 	if err := c.userService.Delete(id); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -128,7 +128,7 @@ func (c *UserController) Update(ctx *gin.Context) {
 	updatedUser, err := c.userService.UpdateUser(user, id)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
