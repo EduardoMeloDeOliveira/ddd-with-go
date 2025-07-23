@@ -25,6 +25,8 @@ func (c *UserController) RegisterRoutes(r *gin.Engine) {
 		userRoutes.POST("", c.CreateUser)
 		userRoutes.GET("/:id", c.FindById)
 		userRoutes.GET("", c.FindAll)
+		userRoutes.PUT("/:id", c.Update)
+		userRoutes.DELETE("/:id", c.Delete)
 	}
 }
 
@@ -37,7 +39,7 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	savedUser, err := c.userService.SaveUser(user.Name, user.Email)
+	savedUser, err := c.userService.SaveUser(user)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -66,9 +68,9 @@ func (c *UserController) FindById(ctx *gin.Context) {
 		return
 	}
 
-	response := mapper.ToUserResponse(user)
+	res := mapper.ToUserResponse(user)
 
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, res)
 
 }
 
@@ -78,13 +80,60 @@ func (c *UserController) FindAll(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	var userResponse []*dto.UserResponseDTO
+	var res []*dto.UserResponseDTO
 
 	for _, user := range users {
-		userResponse = append(userResponse, mapper.ToUserResponse(user))
+		res = append(res, mapper.ToUserResponse(user))
 	}
 
-	ctx.JSON(http.StatusOK, userResponse)
+	if res == nil {
+		res = []*dto.UserResponseDTO{}
+	}
+
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *UserController) Delete(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User id is required"})
+		return
+	}
+	if err := c.userService.Delete(id); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User deleted"})
+}
+
+func (c *UserController) Update(ctx *gin.Context) {
+	var user dto.UserRequestDTO
+	id := ctx.Param("id")
+
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User id is required"})
+		return
+	}
+
+	updatedUser, err := c.userService.UpdateUser(user, id)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res := mapper.ToUserResponse(updatedUser)
+
+	ctx.JSON(http.StatusOK, res)
+
 }

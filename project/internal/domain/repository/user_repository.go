@@ -6,4 +6,5 @@ type UserRepository interface {
 	Save(user *entity.User) error
 	FindById(id string) (*entity.User, error)
 	FindAll() ([]*entity.User, error)
+	Delete(id string) error
 }

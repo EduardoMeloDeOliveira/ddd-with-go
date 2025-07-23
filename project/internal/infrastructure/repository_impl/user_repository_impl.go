@@ -38,5 +38,13 @@ func (repoImpl *UserRepositoryImpl) FindAll() ([]*entity.User, error) {
 		return nil, err
 	}
 
+	if users == nil {
+		return []*entity.User{}, nil
+	}
+
 	return users, nil
+}
+
+func (repoImpl *UserRepositoryImpl) Delete(id string) error {
+	return repoImpl.db.Delete(&entity.User{}, "id = ?", id).Error
 }

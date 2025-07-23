@@ -3,27 +3,24 @@ package service
 import (
 	"errors"
 
+	"github.com/EduardoMeloDeOliveira/ddd-with-go/project/internal/application/dto"
 	"github.com/EduardoMeloDeOliveira/ddd-with-go/project/internal/domain/entity"
 	"github.com/EduardoMeloDeOliveira/ddd-with-go/project/internal/domain/repository"
 )
 
 type UserService struct {
-	userRepo repository.UserRepository
+	userRepository repository.UserRepository
 }
 
 func NewUserService(repo repository.UserRepository) *UserService {
-	return &UserService{userRepo: repo}
+	return &UserService{userRepository: repo}
 }
 
-func (uService *UserService) SaveUser(name string, email string) (*entity.User, error) {
+func (uService *UserService) SaveUser(registerRequest dto.UserRequestDTO) (*entity.User, error) {
 
-	if name == "" || email == "" {
-		return nil, errors.New("name and email can't be empty")
-	}
+	user := entity.NewUser(registerRequest.Name, registerRequest.Email)
 
-	user := entity.NewUser(name, email)
-
-	if err := uService.userRepo.Save(user); err != nil {
+	if err := uService.userRepository.Save(user); err != nil {
 		return nil, err
 	}
 
@@ -31,22 +28,55 @@ func (uService *UserService) SaveUser(name string, email string) (*entity.User, 
 
 }
 
-func (UserService *UserService) GetById(id string) (*entity.User, error) {
-	user, err := UserService.GetById(id)
+func (uService *UserService) GetById(id string) (*entity.User, error) {
+	user, err := uService.userRepository.FindById(id)
 
 	if err != nil {
-		return nil, err
+		return nil, errors.New("User not found")
 	}
 
 	return user, nil
 }
 
-func (UserService *UserService) GetAll() ([]*entity.User, error) {
-	users, err := UserService.userRepo.FindAll()
+func (uService *UserService) GetAll() ([]*entity.User, error) {
+	users, err := uService.userRepository.FindAll()
 
 	if err != nil {
 		return nil, err
 	}
 
 	return users, nil
+}
+
+func (uService *UserService) UpdateUser(userRequestDto dto.UserRequestDTO, id string) (*entity.User, error) {
+
+	user, err := uService.GetById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	newUser := entity.NewUser(userRequestDto.Name, userRequestDto.Email)
+	newUser.ID = user.ID
+
+	if err := uService.userRepository.Save(newUser); err != nil {
+		return nil, err
+	}
+
+	return newUser, err
+}
+
+func (uService *UserService) Delete(id string) error {
+	_, err := uService.GetById(id)
+
+	if err != nil {
+		return err
+	}
+
+	if err := uService.userRepository.Delete(id); err != nil {
+		return err
+	}
+
+	return nil
+
 }
