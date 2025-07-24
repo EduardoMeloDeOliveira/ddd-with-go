@@ -20,7 +20,7 @@ Aprendi bastante sobre como estruturar um projeto limpo em Go, adotando boas pr�
 
 - 🐹 **Go** — [golang.org](https://golang.org/)
 - 🕸 **Gin** — [github.com/gin-gonic/gin](https://github.com/gin-gonic/gin)
-- 🐘 **GORM** — [gorm.io](https://gorm.io/)
+- 🎩 **GORM** — [gorm.io](https://gorm.io/)
 - 🐘 **PostgreSQL** — [postgresql.org](https://www.postgresql.org/)
 - 🐳 **Docker & Docker Compose**
 
